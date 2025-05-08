@@ -35,11 +35,6 @@ export default function NavBar() {
               onChange={(e) => {
                 const nowSearchInput = e.target.value;
                 setSearchInput(nowSearchInput);
-                // if (nowSearchInput) {
-                //   navigate(`/search?movie=${nowSearchInput}`); // 상태변화가 비동기로 전달되어서 변수로 바로 전달
-                // } else {
-                //   navigate("/");
-                // }
               }}
               type="text"
               placeholder="영화 검색"
@@ -70,7 +65,6 @@ export default function NavBar() {
                 onChange={(e) => {
                   const nowSearchInput = e.target.value;
                   setSearchInput(nowSearchInput);
-                  navigate(`/search?movie=${nowSearchInput}`);
                 }}
                 type="text"
                 placeholder="영화 검색"
