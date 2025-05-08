@@ -12,8 +12,10 @@ export default function MovieDetail() {
   const data = useSelector((state) => state.detailMovie.results);
 
   useEffect(() => {
+    setIsLoading(true);
+    setIsImageLoaded(false);
     dispatch(detailMovieData(params.id));
-  }, []);
+  }, [dispatch, params.id]);
 
   useEffect(() => {
     if (data) {
@@ -22,7 +24,9 @@ export default function MovieDetail() {
   }, [data]);
 
   {
-    if (isLoading) return <Skeleton />;
+    if (isLoading || !data || data.id !== Number(params.id)) {
+      return <Skeleton />;
+    }
   }
   return (
     <div className="relative w-full h-[400px] md:h-[600px] text-white">
