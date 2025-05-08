@@ -1,20 +1,24 @@
 import { Link, useSearchParams } from "react-router-dom";
 import SwiperMovieCard from "./SwiperMovieCard";
 import { useSelector } from "react-redux";
-import useSearchFetch from "../customHooks/useSearchFetch";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { searchMovieData } from "../RTK/thunk";
 
 export default function Search({
   swiperPages,
   isImageLoading,
   setisImageLoading,
 }) {
-  const API = import.meta.env.VITE_API_TOKEN;
+  const dispatch = useDispatch();
 
   const filteredData = useSelector((state) => state.searchMovie.results);
   const [searchParms] = useSearchParams();
   const params = searchParms.get("movie");
 
-  useSearchFetch(params);
+  useEffect(() => {
+    dispatch(searchMovieData(params)); // thunk 함수실행하여 redux 상태 업데이트
+  }, [params]);
 
   return (
     <>

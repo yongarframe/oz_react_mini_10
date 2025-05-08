@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useDebounce from "../customHooks/useDebounce";
 
 export default function NavBar() {
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const debounceValue = useDebounce(searchInput, 1000);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchInput) {
-        navigate(`/search?movie=${searchInput}`);
-      } else {
-        navigate("/");
-      }
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [searchInput]);
+    if (debounceValue) {
+      navigate(`/search?movie=${debounceValue}`);
+    } else {
+      navigate("/");
+    }
+  }, [debounceValue]);
 
   return (
     <>
