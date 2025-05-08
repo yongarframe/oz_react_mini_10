@@ -43,7 +43,7 @@ export const searchMovieData = createAsyncThunk(
   }
 );
 
-//Detail API 방아오기
+//Detail API 받아오기
 export const detailMovieData = createAsyncThunk(
   "detailMovie/fetchDetailMovieData",
   async (movieId) => {

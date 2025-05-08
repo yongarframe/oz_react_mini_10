@@ -39,10 +39,16 @@ export default function NavBar() {
               className="hidden md:block border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
 
-            <button className="hidden md:block text-sm px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+            <button
+              className="hidden md:block text-sm px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition"
+              onClick={() => navigate("/login")}
+            >
               로그인
             </button>
-            <button className="hidden md:block text-sm px-4 py-1 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-100 transition">
+            <button
+              className="hidden md:block text-sm px-4 py-1 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-100 transition"
+              onClick={() => navigate("/signup")}
+            >
               회원가입
             </button>
             <button
@@ -68,10 +74,16 @@ export default function NavBar() {
                 placeholder="영화 검색"
                 className="border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
-              <button className="text-sm px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+              <button
+                className="text-sm px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition"
+                onClick={() => navigate("/login")}
+              >
                 로그인
               </button>
-              <button className="text-sm px-4 py-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-100 transition">
+              <button
+                className="text-sm px-4 py-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-100 transition"
+                onClick={() => navigate("/signup")}
+              >
                 회원가입
               </button>
             </div>

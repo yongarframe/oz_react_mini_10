@@ -9,6 +9,8 @@ import { radomPages } from "./functions/RandomPage";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMovieData } from "./RTK/thunk";
 import NotFound from "./components/NotFound";
+import Signup from "./components/Signup";
+import Login from "./components/Login";
 
 function App() {
   const dispatch = useDispatch();
@@ -56,6 +58,8 @@ function App() {
           />
         </Route>
         <Route path="*" element={<NotFound />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
       {location.pathname === "/" && (
         <>
