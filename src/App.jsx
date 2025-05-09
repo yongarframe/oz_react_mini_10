@@ -13,6 +13,7 @@ import Signup from "./components/Signup"; // component import
 import Login from "./components/Login"; // component import
 import { useSupabaseAuth } from "./supabase";
 import { userInfoSlice } from "./RTK/slice";
+import OAuthCallbackPage from "./components/OAuthCallbackPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -21,13 +22,17 @@ function App() {
   const [isImageLoading, setisImageLoading] = useState(true);
   const [swiperPages, setSwiperPages] = useState(null);
   const { getUserInfo } = useSupabaseAuth();
+  const getUserInfoFromLocal = useSelector((state) => state.getLocaluserInfo);
 
-  const fetchData = async () => {
-    const userInfo = await getUserInfo();
-    dispatch(userInfoSlice.actions.update(userInfo));
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      const userInfo = await getUserInfo();
+      dispatch(userInfoSlice.actions.update(userInfo));
+    };
+    fetchData();
+  }, []);
 
-  fetchData();
+  console.log(getUserInfoFromLocal);
 
   useEffect(() => {
     dispatch(fetchMovieData(page));
@@ -68,6 +73,7 @@ function App() {
           />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/oauth-callback" element={<OAuthCallbackPage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

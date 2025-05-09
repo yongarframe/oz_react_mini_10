@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSupabaseAuth } from "../supabase";
+import { useSupabase, useSupabaseAuth } from "../supabase";
 import { useDispatch, useSelector } from "react-redux";
 import { userLoginSlice } from "../RTK/slice";
+import { FcGoogle } from "react-icons/fc"; // Google 아이콘
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,6 +11,9 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const { login } = useSupabaseAuth();
   const dispatch = useDispatch();
+  const { loginWithGoogle } = useSupabaseAuth();
+  // const [error, setError] = useState("");
+  const supabase = useSupabase();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,6 +29,36 @@ export default function Login() {
       console.error("로그인 중 오류 발생", error);
       dispatch(userLoginSlice.actions.isLogin(false));
     }
+  };
+
+  // const handleOAuthLogin = async (provider) => {
+  //   const { error } = await supabase.auth.signInWithOAuth({ provider });
+  //   if (error) setError(`${provider} 로그인 실패: ${error.message}`);
+  // };
+
+  // loginWithGoogle();
+
+  const googleLogin = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "http://localhost:5173/oauth-callback",
+        // oauth-callback
+        queryParams: {
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
+    });
+    dispatch(userLoginSlice.actions.isLogin(data));
+    if (data) {
+      alert("로그인 되었습니다.");
+    }
+    if (error) console.log("error :", error);
+
+    // console.log("구글로그인됨");
+    // e.preventDefault();
+    // loginWithGoogle("http://localhost:5173/");
   };
 
   return (
@@ -55,6 +89,14 @@ export default function Login() {
             로그인
           </button>
         </form>
+        <button
+          type="button"
+          onClick={googleLogin}
+          className="w-full flex items-center justify-center gap-2 border border-gray-300 bg-white text-black py-2 rounded-md hover:shadow-md transition mt-3"
+        >
+          <FcGoogle size={20} />
+          <span>구글 계정으로 로그인</span>
+        </button>
         <p className="mt-4 text-center text-sm text-gray-600">
           처음이신가요?{" "}
           <span

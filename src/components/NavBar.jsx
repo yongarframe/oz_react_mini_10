@@ -11,12 +11,9 @@ export default function NavBar() {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const debounceValue = useDebounce(searchInput, 1000);
-  const userInfo = useSelector((state) => state.getLocaluserInfo);
   const isLogin = useSelector((state) => state.isUserLogin);
   const { logout } = useSupabaseAuth();
   const dispatch = useDispatch();
-
-  console.log(userInfo);
 
   useEffect(() => {
     if (debounceValue) {
