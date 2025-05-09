@@ -71,3 +71,14 @@ export const detailMovieSlice = createSlice({
       });
   },
 });
+
+//userInfo Silce
+export const userInfoSlice = createSlice({
+  name: "userInfo",
+  initialState: [],
+  reducers: {
+    update(state, action) {
+      return action.payload;
+    },
+  },
+});

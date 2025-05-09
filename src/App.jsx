@@ -9,8 +9,10 @@ import { radomPages } from "./functions/RandomPage";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMovieData } from "./RTK/thunk";
 import NotFound from "./components/NotFound";
-import Signup from "./components/Signup";
-import Login from "./components/Login";
+import Signup from "./components/Signup"; // component import
+import Login from "./components/Login"; // component import
+import { useSupabaseAuth } from "./supabase";
+import { userInfoSlice } from "./RTK/slice";
 
 function App() {
   const dispatch = useDispatch();
@@ -18,6 +20,19 @@ function App() {
   const location = useLocation();
   const [isImageLoading, setisImageLoading] = useState(true);
   const [swiperPages, setSwiperPages] = useState(null);
+  const { getUserInfo } = useSupabaseAuth();
+  const userInfo = useSelector((state) => state.getLocaluserInfo);
+
+  console.log(userInfo);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const userInfo = await getUserInfo();
+      dispatch(userInfoSlice.actions.update(userInfo));
+    };
+
+    fetchData();
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchMovieData(page));

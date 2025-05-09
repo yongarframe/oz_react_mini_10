@@ -1,17 +1,24 @@
 import { useState } from "react";
+import { useSupabaseAuth } from "../supabase";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [passWord, setPassWord] = useState("");
+  const [userName, setName] = useState("");
+  const [password, setPassWord] = useState("");
   const [checkPassWord, setCheckPassWord] = useState("");
+  const { signUp } = useSupabaseAuth();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({
       email,
-      name,
-      passWord,
-      checkPassWord,
+      password,
+      userName: userName,
+    });
+    signUp({
+      email,
+      password,
+      userName: userName,
     });
   };
 
@@ -38,7 +45,7 @@ export default function Signup() {
               이름
             </label>
             <input
-              value={name}
+              value={userName}
               onChange={(e) => setName(e.target.value)}
               type="text"
               id="name"
@@ -55,7 +62,7 @@ export default function Signup() {
               비밀번호
             </label>
             <input
-              value={passWord}
+              value={password}
               onChange={(e) => setPassWord(e.target.value)}
               type="password"
               id="password"

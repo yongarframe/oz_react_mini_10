@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSupabaseAuth } from "../supabase";
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useSupabaseAuth();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // 로그인 처리 로직
     console.log("로그인 시도:", { email, password });
+    login({ email, password });
   };
 
   return (
