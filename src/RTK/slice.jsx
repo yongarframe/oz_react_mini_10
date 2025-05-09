@@ -75,9 +75,19 @@ export const detailMovieSlice = createSlice({
 //userInfo Silce
 export const userInfoSlice = createSlice({
   name: "userInfo",
-  initialState: [],
+  initialState: null,
   reducers: {
     update(state, action) {
+      return action.payload;
+    },
+  },
+});
+
+export const userLoginSlice = createSlice({
+  name: "userLogin",
+  initialState: false,
+  reducers: {
+    isLogin(state, action) {
       return action.payload;
     },
   },

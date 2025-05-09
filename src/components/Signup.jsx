@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSupabaseAuth } from "../supabase";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -7,19 +8,22 @@ export default function Signup() {
   const [password, setPassWord] = useState("");
   const [checkPassWord, setCheckPassWord] = useState("");
   const { signUp } = useSupabaseAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({
-      email,
-      password,
-      userName: userName,
-    });
-    signUp({
-      email,
-      password,
-      userName: userName,
-    });
+    try {
+      const fetchSignUp = await signUp({
+        email,
+        password,
+        userName: userName,
+      });
+      if (fetchSignUp) {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("회원가입 중 오류 발생", error);
+    }
   };
 
   return (

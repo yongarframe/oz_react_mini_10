@@ -4,6 +4,7 @@ import {
   movieSlice,
   searchMovieSlice,
   userInfoSlice,
+  userLoginSlice,
 } from "./slice";
 
 export const store = configureStore({
@@ -12,5 +13,6 @@ export const store = configureStore({
     searchMovie: searchMovieSlice.reducer,
     detailMovie: detailMovieSlice.reducer,
     getLocaluserInfo: userInfoSlice.reducer,
+    isUserLogin: userLoginSlice.reducer,
   },
 });

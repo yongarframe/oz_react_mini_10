@@ -21,18 +21,15 @@ function App() {
   const [isImageLoading, setisImageLoading] = useState(true);
   const [swiperPages, setSwiperPages] = useState(null);
   const { getUserInfo } = useSupabaseAuth();
-  const userInfo = useSelector((state) => state.getLocaluserInfo);
 
-  console.log(userInfo);
+  // useEffect(() => {
+  const fetchData = async () => {
+    const userInfo = await getUserInfo();
+    dispatch(userInfoSlice.actions.update(userInfo));
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const userInfo = await getUserInfo();
-      dispatch(userInfoSlice.actions.update(userInfo));
-    };
-
-    fetchData();
-  }, [dispatch]);
+  fetchData();
+  // }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchMovieData(page));
@@ -71,10 +68,10 @@ function App() {
               />
             }
           />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
         </Route>
         <Route path="*" element={<NotFound />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
       </Routes>
       {location.pathname === "/" && (
         <>

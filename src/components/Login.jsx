@@ -1,17 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabaseAuth } from "../supabase";
+import { useDispatch, useSelector } from "react-redux";
+import { userLoginSlice } from "../RTK/slice";
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useSupabaseAuth();
+  const dispatch = useDispatch();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("로그인 시도:", { email, password });
-    login({ email, password });
+    try {
+      const fetchLogin = await login({ email, password });
+      if (fetchLogin) {
+        dispatch(userLoginSlice.actions.isLogin(!!fetchLogin));
+        navigate("/");
+      } else {
+        dispatch(userLoginSlice.actions.isLogin(false));
+      }
+    } catch (error) {
+      console.error("로그인 중 오류 발생", error);
+      dispatch(userLoginSlice.actions.isLogin(false));
+    }
   };
 
   return (

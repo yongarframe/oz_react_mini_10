@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "../customHooks/useDebounce";
+import { useDispatch, useSelector } from "react-redux";
+import { useSupabaseAuth } from "../supabase";
+import { userInfoSlice, userLoginSlice } from "../RTK/slice";
 
 export default function NavBar() {
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const debounceValue = useDebounce(searchInput, 1000);
+  const userInfo = useSelector((state) => state.getLocaluserInfo);
+  const isLogin = useSelector((state) => state.isUserLogin);
+  const { logout } = useSupabaseAuth();
+  const dispatch = useDispatch();
+
+  console.log(userInfo);
 
   useEffect(() => {
     if (debounceValue) {
@@ -16,6 +25,13 @@ export default function NavBar() {
     }
   }, [debounceValue]);
 
+  const handleLogout = async () => {
+    console.log("로그아웃");
+    const isLogout = await logout();
+    console.log(isLogout);
+    dispatch(userInfoSlice.actions.update(null));
+    dispatch(userLoginSlice.actions.isLogin(false));
+  };
   return (
     <>
       <header className="relative">
@@ -39,12 +55,22 @@ export default function NavBar() {
               className="hidden md:block border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
 
-            <button
-              className="hidden md:block text-sm px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition"
-              onClick={() => navigate("/login")}
-            >
-              로그인
-            </button>
+            {!isLogin && (
+              <button
+                className="hidden md:block text-sm px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition"
+                onClick={() => navigate("/login")}
+              >
+                로그인
+              </button>
+            )}
+            {isLogin && (
+              <button
+                className="hidden md:block text-sm px-4 py-1 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
+                onClick={() => handleLogout()}
+              >
+                로그아웃
+              </button>
+            )}
             <button
               className="hidden md:block text-sm px-4 py-1 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-100 transition"
               onClick={() => navigate("/signup")}
