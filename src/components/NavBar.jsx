@@ -4,6 +4,7 @@ import useDebounce from "../customHooks/useDebounce";
 import { useDispatch, useSelector } from "react-redux";
 import { useSupabaseAuth } from "../supabase";
 import { userInfoSlice, userLoginSlice } from "../RTK/slice";
+import loginIcon from "../assets/loginicon.png";
 
 export default function NavBar() {
   const [searchInput, setSearchInput] = useState("");
@@ -64,19 +65,36 @@ export default function NavBar() {
               </button>
             )}
             {isLogin && (
+              <div className="relative group">
+                <img
+                  className="w-[50px] cursor-pointer"
+                  src={loginIcon}
+                  alt="로그인아이콘썸네일"
+                />
+                <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                  <button
+                    className="block w-full px-4 py-2 text-sm text-left hover:bg-gray-100"
+                    // onClick={() => navigate("/wishlist")}
+                  >
+                    관심목록
+                  </button>
+                  <button
+                    className="block w-full px-4 py-2 text-sm text-left hover:bg-gray-100"
+                    onClick={() => handleLogout()}
+                  >
+                    로그아웃
+                  </button>
+                </div>
+              </div>
+            )}
+            {!isLogin && (
               <button
-                className="hidden md:block text-sm px-4 py-1 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
-                onClick={() => handleLogout()}
+                className="hidden md:block text-sm px-4 py-1 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-100 transition"
+                onClick={() => navigate("/signup")}
               >
-                로그아웃
+                회원가입
               </button>
             )}
-            <button
-              className="hidden md:block text-sm px-4 py-1 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-100 transition"
-              onClick={() => navigate("/signup")}
-            >
-              회원가입
-            </button>
             <button
               className="block md:hidden text-2xl pb-1 "
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -100,18 +118,23 @@ export default function NavBar() {
                 placeholder="영화 검색"
                 className="border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
-              <button
-                className="text-sm px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition"
-                onClick={() => navigate("/login")}
-              >
-                로그인
-              </button>
-              <button
-                className="text-sm px-4 py-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-100 transition"
-                onClick={() => navigate("/signup")}
-              >
-                회원가입
-              </button>
+              {!isLogin && (
+                <>
+                  <button
+                    className="text-sm px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition"
+                    onClick={() => navigate("/login")}
+                  >
+                    로그인
+                  </button>
+
+                  <button
+                    className="text-sm px-4 py-2 rounded-md border border-blue-500 text-blue-500 hover:bg-blue-100 transition"
+                    onClick={() => navigate("/signup")}
+                  >
+                    회원가입
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}

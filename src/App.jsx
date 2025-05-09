@@ -22,14 +22,12 @@ function App() {
   const [swiperPages, setSwiperPages] = useState(null);
   const { getUserInfo } = useSupabaseAuth();
 
-  // useEffect(() => {
   const fetchData = async () => {
     const userInfo = await getUserInfo();
     dispatch(userInfoSlice.actions.update(userInfo));
   };
 
   fetchData();
-  // }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchMovieData(page));
