@@ -78,7 +78,7 @@ export const userInfoSlice = createSlice({
   initialState: "",
   reducers: {
     update(state, action) {
-      return action.payload;
+      return action.payload ? action.payload : "";
     },
   },
 });
@@ -93,8 +93,8 @@ export const userLoginSlice = createSlice({
   },
 });
 
-export const kakaoTokenSlice = createSlice({
-  name: "kakaoToken",
+export const serviceTokenSlice = createSlice({
+  name: "serviceToken",
   initialState: "",
   reducers: {
     update(state, action) {

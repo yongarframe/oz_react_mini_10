@@ -23,7 +23,7 @@ function App() {
   const [isImageLoading, setisImageLoading] = useState(true);
   const [swiperPages, setSwiperPages] = useState(null);
   const { getUserInfo } = useSupabaseAuth();
-  // const getUserInfoFromLocal = useSelector((state) => state.getLocaluserInfo);
+  //
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,9 +32,6 @@ function App() {
     };
     fetchData();
   }, []);
-  const userInfo = useSelector((state) => state.getLocaluserInfo);
-
-  console.log(userInfo);
 
   useEffect(() => {
     dispatch(fetchMovieData(page));

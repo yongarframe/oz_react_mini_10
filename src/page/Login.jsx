@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useSupabase, useSupabaseAuth } from "../supabase";
-import { useDispatch, useSelector } from "react-redux";
-import { kakaoTokenSlice, userInfoSlice, userLoginSlice } from "../RTK/slice";
+import { useSupabaseAuth } from "../supabase";
+import { useDispatch } from "react-redux";
+import { serviceTokenSlice, userInfoSlice, userLoginSlice } from "../RTK/slice";
 import { FcGoogle } from "react-icons/fc"; // Google 아이콘
 import kakaoButtonImg from "../assets/kakao_login_large_wide.png";
 import axios from "axios";
 
-const VITE_KAKAOCLIENT_ID = import.meta.env.VITE_KAKAOCLIENT_ID;
+const KAKAOCLIENT_ID = import.meta.env.VITE_KAKAOCLIENT_ID;
+const NAVERCLIENT_ID = import.meta.env.VITE_NAVERCLIENT_ID;
+const NAVERCLIENT_SECRET = import.meta.env.VITE_NAVERCLIENT_SECRET;
+const NAVERSECRET = import.meta.env.VITE_NAVERSECRET;
+
 const redirectURI = "http://localhost:5173/login";
 
 export default function Login() {
@@ -17,22 +21,17 @@ export default function Login() {
   const { login } = useSupabaseAuth();
   const dispatch = useDispatch();
   const [serchParams] = useSearchParams();
-  let kakaoAccessToken = "";
-
-  // const { loginWithGoogle } = useSupabaseAuth();
-  // const [error, setError] = useState("");
-  const supabase = useSupabase();
 
   const kakaoLogin = () => {
-    location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${VITE_KAKAOCLIENT_ID}&redirect_uri=${redirectURI}&response_type=code`;
+    location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAOCLIENT_ID}&redirect_uri=${redirectURI}&response_type=code`;
   };
-  const getToken = async (authorizationCode) => {
+  const getKakaoUserInfo = async (authorizationCode) => {
     axios
       .post(
         `https://kauth.kakao.com/oauth/token`,
         {
           grant_type: "authorization_code",
-          client_id: VITE_KAKAOCLIENT_ID,
+          client_id: KAKAOCLIENT_ID,
           redirect_uri: redirectURI,
           code: authorizationCode,
         },
@@ -43,8 +42,9 @@ export default function Login() {
         }
       )
       .then((res) => {
-        kakaoAccessToken = res.data.access_token;
-        dispatch(kakaoTokenSlice.actions.update(kakaoAccessToken));
+        const kakaoAccessToken = res.data.access_token;
+        console.log(kakaoAccessToken);
+        dispatch(serviceTokenSlice.actions.update(kakaoAccessToken));
         return axios.get(`https://kapi.kakao.com/v2/user/me`, {
           headers: {
             Authorization: `Bearer ${kakaoAccessToken}`,
@@ -54,15 +54,57 @@ export default function Login() {
       })
       .then((response) => {
         const { nickname, profile_image } = response.data.properties;
-        dispatch(userInfoSlice.actions.update({ nickname, profile_image }));
+        dispatch(
+          userInfoSlice.actions.update({
+            nickname,
+            profile_image,
+            service: "kakao",
+          })
+        );
         dispatch(userLoginSlice.actions.isLogin(true));
+      });
+  };
+
+  const naverLogin = () => {
+    location.href = `https://nid.naver.com/oauth2.0/authorize?client_id=${NAVERCLIENT_ID}&response_type=code&redirect_uri=${redirectURI}&state=${NAVERSECRET}`;
+  };
+
+  const getNaverUserInfo = (authorizationCode, naverState) => {
+    axios
+      .post(`http://localhost:3000/naver/login`, {
+        authorizationCode,
+      })
+      .then((res) => {
+        const naverAccessToken = res.data;
+        dispatch(serviceTokenSlice.actions.update(naverAccessToken));
+        return axios
+          .post("http://localhost:3000/naver/userinfo", {
+            naverAccessToken,
+          })
+          .then((res) => {
+            const { profile_image, name } = res.data;
+            dispatch(
+              userInfoSlice.actions.update({
+                nickname: name,
+                profile_image,
+                service: "naver",
+              })
+            );
+            dispatch(userLoginSlice.actions.isLogin(true));
+          });
       });
   };
 
   useEffect(() => {
     const authorizationCode = serchParams.get("code");
+    const naverState = serchParams.get("state");
+
     if (authorizationCode) {
-      getToken(authorizationCode);
+      if (naverState) {
+        getNaverUserInfo(authorizationCode, naverState);
+      } else {
+        getKakaoUserInfo(authorizationCode);
+      }
     }
   }, [serchParams]);
 
@@ -106,10 +148,10 @@ export default function Login() {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
           />
           <button
-            type="submit"
+            onClick={naverLogin}
             className="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg"
           >
-            로그인
+            네이버로 로그인
           </button>
         </form>
         <button

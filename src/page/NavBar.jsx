@@ -3,9 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import useDebounce from "../customHooks/useDebounce";
 import { useDispatch, useSelector } from "react-redux";
 import { useSupabaseAuth } from "../supabase";
-import { userInfoSlice, userLoginSlice } from "../RTK/slice";
+import { serviceTokenSlice, userInfoSlice, userLoginSlice } from "../RTK/slice";
 import loginIcon from "../assets/loginicon.png";
 import axios from "axios";
+
+const NAVERCLIENT_ID = import.meta.env.VITE_NAVERCLIENT_ID;
+const NAVERCLIENT_SECRET = import.meta.env.VITE_NAVERCLIENT_SECRET;
 
 export default function NavBar() {
   const [searchInput, setSearchInput] = useState("");
@@ -13,10 +16,11 @@ export default function NavBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const debounceValue = useDebounce(searchInput, 1000);
   const isLogin = useSelector((state) => state.isUserLogin);
-  const { logout } = useSupabaseAuth();
   const dispatch = useDispatch();
-  const { profile_image } = useSelector((state) => state.getLocaluserInfo);
-  const kakaoAccessToken = useSelector((state) => state.getKakaoToken);
+  const { profile_image, service } = useSelector(
+    (state) => state.getLocaluserInfo
+  );
+  const AccessToken = useSelector((state) => state.getServiceToken);
 
   useEffect(() => {
     if (debounceValue) {
@@ -27,22 +31,37 @@ export default function NavBar() {
   }, [debounceValue]);
 
   const handleLogout = () => {
-    axios
-      .post(
-        "https://kapi.kakao.com/v1/user/logout",
-        {},
-        {
-          headers: { Authorization: `Bearer ${kakaoAccessToken}` },
-        }
-      )
-      .then((res) => {
-        if (res.statusText === "OK") {
-          console.log(res);
-          console.log("로그아웃");
+    if (service === "naver") {
+      const naverAccessToken = AccessToken;
+      axios
+        .delete("http://localhost:3000/naver/logout", {
+          data: { naverAccessToken },
+        })
+        .then((res) => {
+          console.log(res.data);
           dispatch(userInfoSlice.actions.update(""));
+          dispatch(serviceTokenSlice.actions.update(""));
           dispatch(userLoginSlice.actions.isLogin(false));
-        }
-      });
+        });
+    } else if (service === "kakao") {
+      axios
+        .post(
+          "https://kapi.kakao.com/v1/user/logout",
+          {},
+          {
+            headers: { Authorization: `Bearer ${AccessToken}` },
+          }
+        )
+        .then((res) => {
+          if (res.statusText === "OK") {
+            console.log(res);
+            console.log("로그아웃");
+            dispatch(userInfoSlice.actions.update(""));
+            dispatch(serviceTokenSlice.actions.update(""));
+            dispatch(userLoginSlice.actions.isLogin(false));
+          }
+        });
+    }
 
     // dispatch(userInfoSlice.actions.update(null));
     // dispatch(userLoginSlice.actions.isLogin(false));
