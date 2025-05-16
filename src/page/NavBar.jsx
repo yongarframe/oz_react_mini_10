@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useDebounce from "../customHooks/useDebounce";
 import { useDispatch, useSelector } from "react-redux";
 import { useSupabaseAuth } from "../supabase";
 import { userInfoSlice, userLoginSlice } from "../RTK/slice";
 import loginIcon from "../assets/loginicon.png";
+import axios from "axios";
 
 export default function NavBar() {
   const [searchInput, setSearchInput] = useState("");
@@ -14,6 +15,8 @@ export default function NavBar() {
   const isLogin = useSelector((state) => state.isUserLogin);
   const { logout } = useSupabaseAuth();
   const dispatch = useDispatch();
+  const { profile_image } = useSelector((state) => state.getLocaluserInfo);
+  const kakaoAccessToken = useSelector((state) => state.getKakaoToken);
 
   useEffect(() => {
     if (debounceValue) {
@@ -23,13 +26,28 @@ export default function NavBar() {
     }
   }, [debounceValue]);
 
-  const handleLogout = async () => {
-    console.log("로그아웃");
-    const isLogout = await logout();
-    console.log(isLogout);
-    dispatch(userInfoSlice.actions.update(null));
-    dispatch(userLoginSlice.actions.isLogin(false));
+  const handleLogout = () => {
+    axios
+      .post(
+        "https://kapi.kakao.com/v1/user/logout",
+        {},
+        {
+          headers: { Authorization: `Bearer ${kakaoAccessToken}` },
+        }
+      )
+      .then((res) => {
+        if (res.statusText === "OK") {
+          console.log(res);
+          console.log("로그아웃");
+          dispatch(userInfoSlice.actions.update(""));
+          dispatch(userLoginSlice.actions.isLogin(false));
+        }
+      });
+
+    // dispatch(userInfoSlice.actions.update(null));
+    // dispatch(userLoginSlice.actions.isLogin(false));
   };
+
   return (
     <>
       <header className="relative">
@@ -64,17 +82,18 @@ export default function NavBar() {
             {isLogin && (
               <div className="relative group">
                 <img
-                  className="w-[50px] cursor-pointer"
-                  src={loginIcon}
+                  className="w-[50px] h-[50px] cursor-pointer rounded-full object-cover"
+                  src={profile_image ? profile_image : loginIcon}
                   alt="로그인아이콘썸네일"
                 />
                 <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                  <button
+                  <Link
+                    to={`/mypage`}
                     className="block w-full px-4 py-2 text-sm text-left hover:bg-gray-100"
                     // onClick={() => navigate("/wishlist")}
                   >
-                    관심목록
-                  </button>
+                    마이페이지
+                  </Link>
                   <button
                     className="block w-full px-4 py-2 text-sm text-left hover:bg-gray-100"
                     onClick={() => handleLogout()}

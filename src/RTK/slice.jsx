@@ -75,7 +75,7 @@ export const detailMovieSlice = createSlice({
 //userInfo Silce
 export const userInfoSlice = createSlice({
   name: "userInfo",
-  initialState: null,
+  initialState: "",
   reducers: {
     update(state, action) {
       return action.payload;
@@ -88,6 +88,16 @@ export const userLoginSlice = createSlice({
   initialState: false,
   reducers: {
     isLogin(state, action) {
+      return action.payload;
+    },
+  },
+});
+
+export const kakaoTokenSlice = createSlice({
+  name: "kakaoToken",
+  initialState: "",
+  reducers: {
+    update(state, action) {
       return action.payload;
     },
   },

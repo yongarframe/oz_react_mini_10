@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSupabase, useSupabaseAuth } from "../supabase";
 import { useDispatch, useSelector } from "react-redux";
-import { userInfoSlice, userLoginSlice } from "../RTK/slice";
+import { kakaoTokenSlice, userInfoSlice, userLoginSlice } from "../RTK/slice";
 import { FcGoogle } from "react-icons/fc"; // Google 아이콘
 import kakaoButtonImg from "../assets/kakao_login_large_wide.png";
 import axios from "axios";
@@ -44,6 +44,7 @@ export default function Login() {
       )
       .then((res) => {
         kakaoAccessToken = res.data.access_token;
+        dispatch(kakaoTokenSlice.actions.update(kakaoAccessToken));
         return axios.get(`https://kapi.kakao.com/v2/user/me`, {
           headers: {
             Authorization: `Bearer ${kakaoAccessToken}`,
@@ -54,6 +55,7 @@ export default function Login() {
       .then((response) => {
         const { nickname, profile_image } = response.data.properties;
         dispatch(userInfoSlice.actions.update({ nickname, profile_image }));
+        dispatch(userLoginSlice.actions.isLogin(true));
       });
   };
 
@@ -80,35 +82,7 @@ export default function Login() {
     }
   };
 
-  // const handleOAuthLogin = async (provider) => {
-  //   const { error } = await supabase.auth.signInWithOAuth({ provider });
-  //   if (error) setError(`${provider} 로그인 실패: ${error.message}`);
-  // };
-
-  // loginWithGoogle();
-
-  const googleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: "http://localhost:5173/oauth-callback",
-        // oauth-callback
-        queryParams: {
-          access_type: "offline",
-          prompt: "consent",
-        },
-      },
-    });
-    dispatch(userLoginSlice.actions.isLogin(data));
-    if (data) {
-      alert("로그인 되었습니다.");
-    }
-    if (error) console.log("error :", error);
-
-    // console.log("구글로그인됨");
-    // e.preventDefault();
-    // loginWithGoogle("http://localhost:5173/");
-  };
+  const googleLogin = async () => {};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

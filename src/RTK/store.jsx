@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import {
   detailMovieSlice,
+  kakaoTokenSlice,
   movieSlice,
   searchMovieSlice,
   userInfoSlice,
@@ -14,5 +15,6 @@ export const store = configureStore({
     detailMovie: detailMovieSlice.reducer,
     getLocaluserInfo: userInfoSlice.reducer,
     isUserLogin: userLoginSlice.reducer,
+    getKakaoToken: kakaoTokenSlice.reducer,
   },
 });
