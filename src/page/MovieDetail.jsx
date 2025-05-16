@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Skeleton from "./Skeleton";
+import Skeleton from "../components/Skeleton";
 import { useDispatch, useSelector } from "react-redux";
 import { detailMovieData } from "../RTK/thunk";
 

@@ -1,19 +1,20 @@
 import "./App.css";
-import MovieCard from "./components/MovieCard";
-import { Route, Routes, useLocation } from "react-router-dom";
-import MovieDetail from "./components/MovieDetail";
-import Layout from "./components/Layout";
-import { useEffect, useState } from "react";
+import MovieCard from "./page/MovieCard";
+import Layout from "./page/Layout";
 import Search from "./components/Search";
+import NotFound from "./page/NotFound";
+import { Route, Routes, useLocation } from "react-router-dom";
+import MovieDetail from "./page/MovieDetail";
+import { useEffect, useState } from "react";
 import { radomPages } from "./functions/RandomPage";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMovieData } from "./RTK/thunk";
-import NotFound from "./components/NotFound";
-import Signup from "./components/Signup"; // component import
-import Login from "./components/Login"; // component import
+import Signup from "./page/Signup"; // component import
+import Login from "./page/Login"; // component import
 import { useSupabaseAuth } from "./supabase";
 import { userInfoSlice } from "./RTK/slice";
 import OAuthCallbackPage from "./components/OAuthCallbackPage";
+import Mypage from "./page/Mypage";
 
 function App() {
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ function App() {
   const [isImageLoading, setisImageLoading] = useState(true);
   const [swiperPages, setSwiperPages] = useState(null);
   const { getUserInfo } = useSupabaseAuth();
-  const getUserInfoFromLocal = useSelector((state) => state.getLocaluserInfo);
+  // const getUserInfoFromLocal = useSelector((state) => state.getLocaluserInfo);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,8 +32,9 @@ function App() {
     };
     fetchData();
   }, []);
+  const userInfo = useSelector((state) => state.getLocaluserInfo);
 
-  console.log(getUserInfoFromLocal);
+  console.log(userInfo);
 
   useEffect(() => {
     dispatch(fetchMovieData(page));
@@ -73,7 +75,8 @@ function App() {
           />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/oauth-callback" element={<OAuthCallbackPage />} />
+          <Route path="/mypage" element={<Mypage />} />
+          {/* <Route path="/oauth-callback" element={<OAuthCallbackPage />} /> */}
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

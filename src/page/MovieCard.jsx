@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import SwiperMovieCard from "./SwiperMovieCard";
+import SwiperMovieCard from "../components/SwiperMovieCard";
 import { useSelector } from "react-redux";
 
 const Spiner = styled.div`

@@ -1,9 +1,14 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSupabase, useSupabaseAuth } from "../supabase";
 import { useDispatch, useSelector } from "react-redux";
-import { userLoginSlice } from "../RTK/slice";
+import { userInfoSlice, userLoginSlice } from "../RTK/slice";
 import { FcGoogle } from "react-icons/fc"; // Google 아이콘
+import kakaoButtonImg from "../assets/kakao_login_large_wide.png";
+import axios from "axios";
+
+const VITE_KAKAOCLIENT_ID = import.meta.env.VITE_KAKAOCLIENT_ID;
+const redirectURI = "http://localhost:5173/login";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -11,9 +16,53 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const { login } = useSupabaseAuth();
   const dispatch = useDispatch();
-  const { loginWithGoogle } = useSupabaseAuth();
+  const [serchParams] = useSearchParams();
+  let kakaoAccessToken = "";
+
+  // const { loginWithGoogle } = useSupabaseAuth();
   // const [error, setError] = useState("");
   const supabase = useSupabase();
+
+  const kakaoLogin = () => {
+    location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${VITE_KAKAOCLIENT_ID}&redirect_uri=${redirectURI}&response_type=code`;
+  };
+  const getToken = async (authorizationCode) => {
+    axios
+      .post(
+        `https://kauth.kakao.com/oauth/token`,
+        {
+          grant_type: "authorization_code",
+          client_id: VITE_KAKAOCLIENT_ID,
+          redirect_uri: redirectURI,
+          code: authorizationCode,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+          },
+        }
+      )
+      .then((res) => {
+        kakaoAccessToken = res.data.access_token;
+        return axios.get(`https://kapi.kakao.com/v2/user/me`, {
+          headers: {
+            Authorization: `Bearer ${kakaoAccessToken}`,
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+          },
+        });
+      })
+      .then((response) => {
+        const { nickname, profile_image } = response.data.properties;
+        dispatch(userInfoSlice.actions.update({ nickname, profile_image }));
+      });
+  };
+
+  useEffect(() => {
+    const authorizationCode = serchParams.get("code");
+    if (authorizationCode) {
+      getToken(authorizationCode);
+    }
+  }, [serchParams]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -97,6 +146,11 @@ export default function Login() {
           <FcGoogle size={20} />
           <span>구글 계정으로 로그인</span>
         </button>
+        <img
+          onClick={kakaoLogin}
+          src={kakaoButtonImg}
+          className="mt-[10px] w-full"
+        />
         <p className="mt-4 text-center text-sm text-gray-600">
           처음이신가요?{" "}
           <span
